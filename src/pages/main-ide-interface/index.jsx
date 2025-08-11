@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 // Import all components
 import FileExplorerPanel from './components/FileExplorerPanel';
@@ -11,16 +12,14 @@ import AIAssistantPanel from './components/AIAssistantPanel';
 import TerminalPanel from './components/TerminalPanel';
 import StatusBar from './components/StatusBar';
 import MenuBar from './components/MenuBar';
+import ActivityBar from './components/ActivityBar';
 
 const MainIDEInterface = () => {
   const navigate = useNavigate();
   
-  // Panel visibility states
-  const [panels, setPanels] = useState({
-    explorer: true,
-    ai: false,
-    terminal: false
-  });
+  // View states
+  const [activeView, setActiveView] = useState('explorer'); // 'explorer', 'ai', etc. or null
+  const [isTerminalVisible, setTerminalVisible] = useState(false);
 
   // File management states
   const [openFiles, setOpenFiles] = useState([]);
@@ -28,9 +27,10 @@ const MainIDEInterface = () => {
   const [cursorPosition, setCursorPosition] = useState({ line: 1, column: 1 });
 
   // Layout states
-  const [terminalHeight, setTerminalHeight] = useState(200);
-  const [explorerWidth, setExplorerWidth] = useState(320);
-  const [aiPanelWidth, setAiPanelWidth] = useState(384);
+  // These are now managed by the resizable panel library
+  // const [terminalHeight, setTerminalHeight] = useState(200);
+  // const [explorerWidth, setExplorerWidth] = useState(320);
+  // const [aiPanelWidth, setAiPanelWidth] = useState(384);
 
   // Initialize with welcome file
   useEffect(() => {
@@ -72,12 +72,13 @@ Happy coding! 🚀`,
     setActiveFile(welcomeFile);
   }, []);
 
-  // Panel toggle handlers
-  const togglePanel = useCallback((panelName) => {
-    setPanels(prev => ({
-      ...prev,
-      [panelName]: !prev?.[panelName]
-    }));
+  // View toggle handlers
+  const handleViewChange = useCallback((view) => {
+    setActiveView(prev => (prev === view ? null : view));
+  }, []);
+
+  const toggleTerminal = useCallback(() => {
+    setTerminalVisible(prev => !prev);
   }, []);
 
   // File management handlers
@@ -178,33 +179,23 @@ Happy coding! 🚀`,
 
   const handleViewAction = useCallback((action) => {
     switch (action) {
-      case 'explorer': togglePanel('explorer');
+      case 'explorer':
+        handleViewChange('explorer');
         break;
-      case 'terminal': togglePanel('terminal');
+      case 'terminal':
+        toggleTerminal();
         break;
-      case 'ai': togglePanel('ai');
-        break;
-      case 'sidebar':
-        setPanels(prev => ({
-          ...prev,
-          explorer: !prev?.explorer,
-          ai: false
-        }));
+      case 'ai':
+        handleViewChange('ai');
         break;
       default:
         console.log(`View action: ${action}`);
     }
-  }, [togglePanel]);
+  }, [handleViewChange, toggleTerminal]);
 
   const handleSettingsClick = useCallback(() => {
     navigate('/project-settings-dashboard');
   }, [navigate]);
-
-  // Navigation handlers
-  const handleNavigateToExplorer = () => navigate('/file-explorer-panel');
-  const handleNavigateToEditor = () => navigate('/code-editor-workspace');
-  const handleNavigateToAI = () => navigate('/ai-assistant-sidebar');
-  const handleNavigateToTerminal = () => navigate('/terminal-integration-panel');
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
@@ -216,48 +207,63 @@ Happy coding! 🚀`,
       />
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar - File Explorer */}
-        <FileExplorerPanel
-          isVisible={panels?.explorer}
-          onToggle={() => togglePanel('explorer')}
-          onFileSelect={handleFileSelect}
-          activeFile={activeFile}
+        <ActivityBar
+          activeView={activeView}
+          onNavigate={handleViewChange}
+          onSettingsClick={handleSettingsClick}
         />
-
-        {/* Center Area - Editor */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Tab Bar */}
-          <EditorTabBar
-            openFiles={openFiles}
-            activeFile={activeFile}
-            onFileSelect={setActiveFile}
-            onFileClose={handleFileClose}
-            onTabReorder={handleTabReorder}
-          />
-
-          {/* Editor */}
-          <div className="flex-1 flex flex-col">
-            <MonacoEditorWrapper
-              activeFile={activeFile}
-              onContentChange={handleContentChange}
-              theme="vs-dark"
-            />
-          </div>
-
-          {/* Terminal Panel */}
-          <TerminalPanel
-            isVisible={panels?.terminal}
-            onToggle={() => togglePanel('terminal')}
-            height={terminalHeight}
-          />
-        </div>
-
-        {/* Right Sidebar - AI Assistant */}
-        <AIAssistantPanel
-          isVisible={panels?.ai}
-          onToggle={() => togglePanel('ai')}
-          activeFile={activeFile}
-        />
+        <PanelGroup direction="horizontal">
+          {activeView && (
+            <Panel defaultSize={20} minSize={15} maxSize={40}>
+              <div className="h-full overflow-y-auto">
+                {activeView === 'explorer' && (
+                  <FileExplorerPanel
+                    onFileSelect={handleFileSelect}
+                    activeFile={activeFile}
+                    onToggle={() => handleViewChange('explorer')}
+                  />
+                )}
+                {activeView === 'ai' && (
+                  <AIAssistantPanel
+                    activeFile={activeFile}
+                    onToggle={() => handleViewChange('ai')}
+                  />
+                )}
+              </div>
+            </Panel>
+          )}
+          {activeView && <PanelResizeHandle className="w-1 bg-panel-border hover:bg-primary transition-colors" />}
+          <Panel>
+            <PanelGroup direction="vertical">
+              <Panel>
+                <div className="h-full flex flex-col">
+                  <EditorTabBar
+                    openFiles={openFiles}
+                    activeFile={activeFile}
+                    onFileSelect={setActiveFile}
+                    onFileClose={handleFileClose}
+                    onTabReorder={handleTabReorder}
+                  />
+                  <div className="flex-1 overflow-hidden">
+                    <MonacoEditorWrapper
+                      activeFile={activeFile}
+                      onContentChange={handleContentChange}
+                      theme="vs-dark"
+                    />
+                  </div>
+                </div>
+              </Panel>
+              {isTerminalVisible && <PanelResizeHandle className="h-1 bg-panel-border hover:bg-primary transition-colors" />}
+              {isTerminalVisible && (
+                <Panel defaultSize={25} minSize={10}>
+                  <TerminalPanel
+                    onToggle={toggleTerminal}
+                  />
+                </Panel>
+              )}
+            </PanelGroup>
+          </Panel>
+        </PanelGroup>
       </div>
       {/* Status Bar */}
       <StatusBar
@@ -265,85 +271,6 @@ Happy coding! 🚀`,
         cursorPosition={cursorPosition}
         onSettingsClick={handleSettingsClick}
       />
-      {/* Quick Navigation Panel - Mobile/Tablet */}
-      <div className="lg:hidden fixed bottom-4 right-4 z-50">
-        <div className="bg-surface border border-panel-border rounded-lg shadow-floating p-2">
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleNavigateToExplorer}
-              className="flex flex-col items-center p-2"
-            >
-              <Icon name="FolderOpen" size={16} />
-              <span className="text-xs mt-1">Explorer</span>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleNavigateToEditor}
-              className="flex flex-col items-center p-2"
-            >
-              <Icon name="FileText" size={16} />
-              <span className="text-xs mt-1">Editor</span>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleNavigateToAI}
-              className="flex flex-col items-center p-2"
-            >
-              <Icon name="Bot" size={16} />
-              <span className="text-xs mt-1">AI</span>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleNavigateToTerminal}
-              className="flex flex-col items-center p-2"
-            >
-              <Icon name="Terminal" size={16} />
-              <span className="text-xs mt-1">Terminal</span>
-            </Button>
-          </div>
-        </div>
-      </div>
-      {/* Responsive Panel Toggles */}
-      <div className="md:hidden fixed top-16 left-4 z-40 flex flex-col space-y-2">
-        <Button
-          variant={panels?.explorer ? "default" : "outline"}
-          size="sm"
-          onClick={() => togglePanel('explorer')}
-          className="w-10 h-10 p-0"
-        >
-          <Icon name="FolderOpen" size={16} />
-        </Button>
-        
-        <Button
-          variant={panels?.ai ? "default" : "outline"}
-          size="sm"
-          onClick={() => togglePanel('ai')}
-          className="w-10 h-10 p-0"
-        >
-          <Icon name="Bot" size={16} />
-        </Button>
-        
-        <Button
-          variant={panels?.terminal ? "default" : "outline"}
-          size="sm"
-          onClick={() => togglePanel('terminal')}
-          className="w-10 h-10 p-0"
-        >
-          <Icon name="Terminal" size={16} />
-        </Button>
-      </div>
-      {/* Mobile Overlay for Panels */}
-      {(panels?.explorer || panels?.ai) && (
-        <div className="md:hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-30" />
-      )}
     </div>
   );
 };

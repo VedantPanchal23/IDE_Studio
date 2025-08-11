@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
-const FileExplorerPanel = ({ isVisible, onToggle, onFileSelect, activeFile }) => {
+const FileExplorerPanel = ({ onToggle, onFileSelect, activeFile }) => {
   const [expandedFolders, setExpandedFolders] = useState(new Set(['src', 'public']));
   const [contextMenu, setContextMenu] = useState(null);
 
@@ -158,8 +158,6 @@ const FileExplorerPanel = ({ isVisible, onToggle, onFileSelect, activeFile }) =>
       }
     });
   };
-
-  if (!isVisible) return null;
 
   return (
     <>

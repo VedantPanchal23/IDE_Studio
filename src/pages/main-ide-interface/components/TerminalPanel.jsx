@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
-const TerminalPanel = ({ isVisible, onToggle, height = 200 }) => {
+const TerminalPanel = ({ onToggle, height = 200 }) => {
   const [terminalHistory, setTerminalHistory] = useState([]);
   const [currentCommand, setCurrentCommand] = useState('');
   const [workingDirectory, setWorkingDirectory] = useState('/project');
@@ -201,8 +201,6 @@ echo <text> - Print text`;
       }
     }
   }, [currentCommand, commandHistory, historyIndex, executeCommand]);
-
-  if (!isVisible) return null;
 
   return (
     <div 

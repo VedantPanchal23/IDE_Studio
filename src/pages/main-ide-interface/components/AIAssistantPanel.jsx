@@ -3,7 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 
-const AIAssistantPanel = ({ isVisible, onToggle, activeFile }) => {
+const AIAssistantPanel = ({ onToggle, activeFile }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -28,10 +28,12 @@ const AIAssistantPanel = ({ isVisible, onToggle, activeFile }) => {
   }, [messages, scrollToBottom]);
 
   useEffect(() => {
-    if (isVisible && inputRef?.current) {
+    // The panel is now controlled by the parent, so we can focus the input when the component mounts
+    // if it's intended to be visible. A more robust solution might involve a prop.
+    if (inputRef?.current) {
       inputRef?.current?.focus();
     }
-  }, [isVisible]);
+  }, []);
 
   const handleSendMessage = useCallback(async () => {
     if (!inputValue?.trim()) return;
@@ -97,8 +99,6 @@ const AIAssistantPanel = ({ isVisible, onToggle, activeFile }) => {
       setIsTyping(false);
     }, 2000);
   }, [activeFile]);
-
-  if (!isVisible) return null;
 
   return (
     <div className="w-96 bg-panel border-l border-panel-border flex flex-col h-full">
