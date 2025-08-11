@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Background Colors */
+    --color-background: #1E1E1E; /* deep-charcoal */
+    --color-foreground: #CCCCCC; /* light-gray */
+    --color-surface: #252526; /* charcoal-light */
+    --color-surface-foreground: #CCCCCC; /* light-gray */
+    
+    /* Card Colors */
+    --color-card: #252526; /* charcoal-light */
+    --color-card-foreground: #CCCCCC; /* light-gray */
+    
+    /* Popover Colors */
+    --color-popover: #2D2D30; /* charcoal-lighter */
+    --color-popover-foreground: #CCCCCC; /* light-gray */
+    
+    /* Muted Colors */
+    --color-muted: #3C3C3C; /* gray-700 */
+    --color-muted-foreground: #969696; /* gray-400 */
+    
+    /* Border and Input */
+    --color-border: rgba(255, 255, 255, 0.1); /* white-10 */
+    --color-input: #2D2D30; /* charcoal-lighter */
+    --color-ring: #007ACC; /* vs-code-blue */
+    
+    /* Primary Colors */
+    --color-primary: #007ACC; /* vs-code-blue */
+    --color-primary-foreground: #FFFFFF; /* white */
+    
+    /* Secondary Colors */
+    --color-secondary: #6C757D; /* neutral-gray */
+    --color-secondary-foreground: #FFFFFF; /* white */
+    
+    /* Accent Colors */
+    --color-accent: #FF6B35; /* warm-orange */
+    --color-accent-foreground: #FFFFFF; /* white */
+    
+    /* Success Colors */
+    --color-success: #4CAF50; /* green-500 */
+    --color-success-foreground: #FFFFFF; /* white */
+    
+    /* Warning Colors */
+    --color-warning: #FF9800; /* amber-500 */
+    --color-warning-foreground: #000000; /* black */
+    
+    /* Error/Destructive Colors */
+    --color-error: #F44336; /* red-500 */
+    --color-error-foreground: #FFFFFF; /* white */
+    --color-destructive: #F44336; /* red-500 */
+    --color-destructive-foreground: #FFFFFF; /* white */
+    
+    /* Panel Colors */
+    --color-panel: #2D2D30; /* charcoal-lighter */
+    --color-panel-foreground: #CCCCCC; /* light-gray */
+    --color-panel-border: rgba(255, 255, 255, 0.08); /* white-8 */
+    
+    /* Hover States */
+    --color-hover: rgba(255, 255, 255, 0.05); /* white-5 */
+    --color-hover-strong: rgba(255, 255, 255, 0.1); /* white-10 */
+    
+    /* Active States */
+    --color-active: rgba(0, 122, 204, 0.2); /* vs-code-blue-20 */
+    --color-active-foreground: #CCCCCC; /* light-gray */
+    
+    /* Focus States */
+    --color-focus: #007ACC; /* vs-code-blue */
+    --color-focus-ring: rgba(0, 122, 204, 0.3); /* vs-code-blue-30 */
+    
+    /* Shadows */
+    --shadow-resting: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-raised: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --shadow-floating: 0 4px 16px rgba(0, 0, 0, 0.2);
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom scrollbar for IDE-like experience */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-muted);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted-foreground);
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Focus visible styles for accessibility */
+  .focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* Panel resize handle styles */
+  .resize-handle {
+    @apply bg-border hover:bg-primary transition-colors duration-150;
+  }
+
+  .resize-handle:hover {
+    @apply bg-primary;
+  }
+
+  /* Code editor specific styles */
+  .monaco-editor {
+    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+  }
+
+  /* Panel animation classes */
+  .panel-enter {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  .panel-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+
+  .panel-exit {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .panel-exit-active {
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+
+  /* Shimmer loading animation */
+  @keyframes shimmer {
+    0% {
+      background-position: -200px 0;
+    }
+    100% {
+      background-position: calc(200px + 100%) 0;
+    }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--color-muted) 0px,
+      var(--color-hover) 40px,
+      var(--color-muted) 80px
+    );
+    background-size: 200px 100%;
+    animation: shimmer 2s linear infinite;
+  }
+}
