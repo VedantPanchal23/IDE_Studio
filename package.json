@@ -7,17 +7,26 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "nodemon backend.js"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/postcss": "^4.1.11",
+    "axios": "^1.11.0",
+    "cors": "^2.8.5",
+    "dockerode": "^4.0.7",
+    "express": "^5.1.0",
+    "firebase": "^12.1.0",
     "fuse.js": "^7.1.0",
+    "jszip": "^3.10.1",
     "localforage": "^1.10.0",
     "lucide-react": "^0.539.0",
     "monaco-editor": "^0.52.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-icons": "^5.5.0",
+    "react-resizable-panels": "^3.0.4",
     "xterm": "^5.3.0"
   },
   "devDependencies": {
@@ -30,6 +39,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "nodemon": "^3.1.10",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11",
     "vite": "^7.1.2"

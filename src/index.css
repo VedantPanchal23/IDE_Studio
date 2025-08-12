@@ -4,6 +4,14 @@
 
 :root {
   --editor-font: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
+  --editor-bg: #1e1e2f;
+  --vscode-bg: #1e1e2f;
+  --vscode-side: #252526;
+}
+
+.editor-glow {
+  box-shadow: 0 0 10px 2px rgba(78, 155, 255, 0.3);
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 .vscode-like, .monaco-editor {

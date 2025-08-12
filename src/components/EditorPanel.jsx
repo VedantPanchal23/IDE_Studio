@@ -38,7 +38,7 @@ greet();`);
     }
 
     return () => editorRef.current?.dispose();
-  }, []);
+  }, [code]);
 
   return (
     <div
