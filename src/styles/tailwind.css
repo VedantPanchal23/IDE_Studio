@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --vscode-bg: #1e1e2f;
+  --vscode-side: #0b1015;
+  --editor-font: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
+}
+
+.vscode-like, .monaco-editor {
+  font-family: var(--editor-font);
+}
+
+/* Basic reset for canvas preview */
+html,body,#root{height:100%;margin:0}
